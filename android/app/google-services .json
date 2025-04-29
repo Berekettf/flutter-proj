@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "447567628887",
+    "project_id": "travel01-401212",
+    "storage_bucket": "travel01-401212.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447567628887:android:87702c92a13597569b3112",
+        "android_client_info": {
+          "package_name": "com.android.application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8a1ZxU50P6HzVB2CzjbDEiGuxKdd7qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447567628887:android:a00ade41ae3bfdbe9b3112",
+        "android_client_info": {
+          "package_name": "com.example.flutter_ser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8a1ZxU50P6HzVB2CzjbDEiGuxKdd7qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447567628887:android:1d2c5938bf11103d9b3112",
+        "android_client_info": {
+          "package_name": "com.example.oooh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8a1ZxU50P6HzVB2CzjbDEiGuxKdd7qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

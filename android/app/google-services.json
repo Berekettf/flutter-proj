@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "447567628887",
+    "firebase_url": "https://travel01-401212-default-rtdb.firebaseio.com",
+    "project_id": "travel01-401212",
+    "storage_bucket": "travel01-401212.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447567628887:android:1d2c5938bf11103d9b3112",
+        "android_client_info": {
+          "package_name": "com.example.oooh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8a1ZxU50P6HzVB2CzjbDEiGuxKdd7qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:447567628887:android:7cd60ea1f2db66069b3112",
+        "android_client_info": {
+          "package_name": "com.example.smart_public_bus_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8a1ZxU50P6HzVB2CzjbDEiGuxKdd7qvM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
