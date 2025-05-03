@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:logger/logger.dart';
+
+final logger = Logger();
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -41,9 +44,9 @@ class _MapScreenState extends State<MapScreen> {
       await _database
           .child('test')
           .set({'timestamp': DateTime.now().toString()});
-      print('Database write successful');
+      logger.i('Database write successful');
     } catch (e) {
-      print('Database error: $e');
+      logger.e('Database error: $e');
     }
   }
 
@@ -78,7 +81,7 @@ class _MapScreenState extends State<MapScreen> {
               'Last update: ${DateTime.fromMillisecondsSinceEpoch(timestamp).toLocal()}';
         });
 
-        _mapController.move(_currentBusPosition!, _mapController.zoom);
+        _mapController.move(_currentBusPosition!, _mapController.camera.zoom);
       }
     });
   }
@@ -93,9 +96,11 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<void> _submitManualLocation() async {
     if (_busIdController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a Bus ID')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a Bus ID')),
+        );
+      }
       return;
     }
 
@@ -104,9 +109,11 @@ class _MapScreenState extends State<MapScreen> {
       final lng = double.tryParse(_lngController.text);
 
       if (lat == null || lng == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid latitude or longitude')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Invalid latitude or longitude')),
+          );
+        }
         return;
       }
 
@@ -116,14 +123,19 @@ class _MapScreenState extends State<MapScreen> {
         'timestamp': DateTime.now().millisecondsSinceEpoch,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('Location updated for Bus ${_busIdController.text}')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Location updated for Bus ${_busIdController.text}'),
+          ),
+        );
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
   }
 
@@ -144,7 +156,7 @@ class _MapScreenState extends State<MapScreen> {
             mapController: _mapController,
             options: MapOptions(
               initialCenter: _currentBusPosition ?? const LatLng(9.03, 38.74),
-              initialZoom: 12.0,
+              initialZoom: 14.0,
             ),
             children: [
               TileLayer(

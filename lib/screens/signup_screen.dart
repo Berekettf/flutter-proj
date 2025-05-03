@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'login_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,7 +16,9 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _fullNameController = TextEditingController(); // Added full name field
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
   bool _isLoading = false;
 
   @override
@@ -55,6 +58,28 @@ class _SignupScreenState extends State<SignupScreen> {
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.teal),
+                            ),
+                            const SizedBox(height: 20),
+                            // Added Full Name Field
+                            TextFormField(
+                              controller: _fullNameController,
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: Colors.grey[200],
+                                prefixIcon: const Icon(Icons.person_outline),
+                                hintText: 'Enter your full name',
+                                labelText: 'Full Name',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your full name';
+                                }
+                                return null;
+                              },
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
@@ -140,59 +165,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 ),
                                 backgroundColor: Colors.orange.shade800,
                               ),
-                              onPressed: _isLoading ? null : () async {
-                                if (_formKey.currentState!.validate()) {
-                                  setState(() {
-                                    _isLoading = true;
-                                  });
-                                  try {
-                                    bool userExists = await checkUserExists(
-                                        _emailController.text.trim());
-                                    if (userExists) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          content: Text('User already exists. Please login.'),
-                                          backgroundColor: Colors.red,
-                                        ),
-                                      );
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const LoginScreen()),
-                                      );
-                                    } else {
-                                      final user = await createUserWithEmailAndPassword(
-                                          _emailController.text.trim(),
-                                          _passwordController.text.trim());
-                                      if (user != null) {
-                                        log('User Created Successfully');
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Account created successfully!'),
-                                            backgroundColor: Colors.green,
-                                          ),
-                                        );
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => const LoginScreen()),
-                                        );
-                                      }
-                                    }
-                                  } catch (e) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('Error: ${e.toString()}'),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  } finally {
-                                    setState(() {
-                                      _isLoading = false;
-                                    });
-                                  }
-                                }
-                              },
+                              onPressed: _isLoading ? null : _signUpUser,
                               child: _isLoading
                                   ? const SizedBox(
                                       width: 20,
@@ -211,7 +184,6 @@ class _SignupScreenState extends State<SignupScreen> {
                             const SizedBox(height: 10),
                             TextButton(
                               onPressed: () {
-                                // Always navigate to LoginScreen, regardless of auth state
                                 Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
@@ -238,36 +210,91 @@ class _SignupScreenState extends State<SignupScreen> {
     );
   }
 
-  Future<User?> createUserWithEmailAndPassword(
-      String email, String password) async {
-    try {
-      final credentials = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      return credentials.user;
-    } on FirebaseAuthException catch (e) {
-      String errorMessage;
-      switch (e.code) {
-        case 'weak-password':
-          errorMessage = 'The password provided is too weak.';
-          break;
-        case 'email-already-in-use':
-          errorMessage = 'The account already exists for that email.';
-          break;
-        case 'invalid-email':
-          errorMessage = 'The email address is badly formatted.';
-          break;
-        default:
-          errorMessage = 'An error occurred. Please try again.';
+  Future<void> _signUpUser() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+      try {
+        final email = _emailController.text.trim();
+        final password = _passwordController.text.trim();
+        
+        bool userExists = await checkUserExists(email);
+        if (userExists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('User already exists. Please login.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+          return;
+        }
+
+        final userCredential = await _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        if (userCredential.user != null) {
+          // Save additional user data to Firestore
+          await _firestore.collection('users').doc(userCredential.user!.uid).set({
+            'uid': userCredential.user!.uid,
+            'email': email,
+            'username': _usernameController.text.trim(),
+            'fullName': _fullNameController.text.trim(),
+            'createdAt': FieldValue.serverTimestamp(),
+            'profileImage': '',
+            'bio': '', // Optional: Add a bio field
+          });
+
+          log('User Created Successfully');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        String errorMessage = _getAuthErrorMessage(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
+        );
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage), backgroundColor: Colors.red),
-      );
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}'), backgroundColor: Colors.red),
-      );
     }
-    return null;
+  }
+
+  String _getAuthErrorMessage(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'weak-password':
+        return 'The password provided is too weak.';
+      case 'email-already-in-use':
+        return 'The account already exists for that email.';
+      case 'invalid-email':
+        return 'The email address is badly formatted.';
+      case 'operation-not-allowed':
+        return 'Email/password accounts are not enabled.';
+      default:
+        return 'An error occurred. Please try again.';
+    }
   }
 
   Future<bool> checkUserExists(String email) async {
@@ -285,6 +312,7 @@ class _SignupScreenState extends State<SignupScreen> {
     _usernameController.dispose();
     _passwordController.dispose();
     _emailController.dispose();
+    _fullNameController.dispose();
     super.dispose();
   }
 }

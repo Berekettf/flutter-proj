@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  font_awesome_flutter: ^10.6.0
+  font_awesome_flutter: ^10.7.0
   cupertino_icons: ^1.0.6
   firebase_database: ^10.2.3
   firebase_core: ^2.25.4
@@ -18,10 +18,16 @@ dependencies:
   firebase_auth_web: ^5.8.8
   qr_flutter: ^4.0.0
   cloud_firestore: ^4.15.5
+  logger: 2.5.0
+  image_picker: ^0.8.5+3
+  firebase_storage: ^11.7.7
 
   # Map and geolocation
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
+
+  # Font fallback
+  google_fonts: ^6.1.0
 
 dev_dependencies:
   flutter_test:

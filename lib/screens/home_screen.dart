@@ -4,11 +4,11 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  _HomeScreenState createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final TextEditingController _routeController = TextEditingController();
+class HomeScreenState extends State<HomeScreen> {
+  //final TextEditingController _routeController = TextEditingController();
   List<Map<String, String>> _busList = [];
   String _selectedRoute = 'Megenagna-6kilo'; // Default route
   final List<String> _routes = ['Megenagna-6kilo', 'Bole-Mercato', 'Piassa-Sarbet']; // Example routes

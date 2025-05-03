@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'map_screen.dart';
 import 'home_screen.dart';
 import 'payment_screen.dart';
@@ -44,7 +45,8 @@ class _DashboardState extends State<Dashboard> {
         ),
         actions: [
           PopupMenuButton<String>(
-            icon: const Icon(Icons.more_vert, color: Colors.white),
+            icon: const FaIcon(FontAwesomeIcons.ellipsisVertical,
+                color: Colors.white),
             onSelected: (String result) {
               switch (result) {
                 case 'Profile':
@@ -74,21 +76,24 @@ class _DashboardState extends State<Dashboard> {
               const PopupMenuItem<String>(
                 value: 'Profile',
                 child: ListTile(
-                  leading: Icon(Icons.person, color: Colors.blueAccent),
+                  leading:
+                      FaIcon(FontAwesomeIcons.user, color: Colors.blueAccent),
                   title: Text('Profile'),
                 ),
               ),
               const PopupMenuItem<String>(
                 value: 'Contact Us',
                 child: ListTile(
-                  leading: Icon(Icons.contact_mail, color: Colors.greenAccent),
+                  leading: FaIcon(FontAwesomeIcons.envelope,
+                      color: Colors.greenAccent),
                   title: Text('Contact Us'),
                 ),
               ),
               const PopupMenuItem<String>(
                 value: 'Log Out',
                 child: ListTile(
-                  leading: Icon(Icons.logout, color: Colors.redAccent),
+                  leading: FaIcon(FontAwesomeIcons.rightFromBracket,
+                      color: Colors.redAccent),
                   title: Text('Log Out'),
                 ),
               ),
@@ -118,7 +123,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withAlpha((0.2 * 255).toInt()),
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
@@ -133,15 +138,17 @@ class _DashboardState extends State<Dashboard> {
           child: BottomNavigationBar(
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
-                icon: Icon(Icons.map),
+                icon: FaIcon(FontAwesomeIcons.mapLocationDot,
+                    color: Colors.blueAccent),
                 label: 'Map',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.home),
+                icon: FaIcon(FontAwesomeIcons.house, color: Colors.purple),
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.payment),
+                icon: FaIcon(FontAwesomeIcons.creditCard,
+                    color: Colors.yellowAccent),
                 label: 'Payment',
               ),
             ],
